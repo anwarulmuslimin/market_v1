@@ -25,7 +25,7 @@
     </div>
 </section>
 
-<section class="page container">
+<section class="page container" onkeydown="myFunction();">
     <div class="row">
         <div class="span10">
             <div id="search-list">
@@ -38,8 +38,8 @@
                         </td>
                         <td>
                         <div class="btn-group">
-                        <button id="simpan" rel="tooltip" title="Simpan Sebagai pembelian" class="btn"><i class="icon-shopping-cart"></i> Simpan</button>
-                            <a href="#MyModalcariBarang" title="Ctrl+Shift+F" role="button" class="btn" data-toggle="modal"><i class="icon-search"></i> Cari</a>
+                        <button id="simpan" rel="tooltip" title="Simpan Sebagai pembelian" class="btn btn-primary"><i class="icon-shopping-cart"></i> Simpan</button>
+                            <a title="Ctrl+Shift+F" role="button" class="btn" data-toggle="modal"><i class="icon-search"></i> Cari</a>
                             </div>
                         </td>
                     </tr>
@@ -85,12 +85,12 @@
 </div>
 <style>
     .daftars{
-        background-color:black;
-        color:white;
+        background-color:#143238;
+        color:#78f12d;
         height:250px;
         overflow:auto;
         border-radius: 5px 5px 5px 5px;
-        box-shadow: 0px 0px 4px black;
+        box-shadow: 0px 0px 4px #143238;
     }
     .btn-large{
         margin-left:0px;
@@ -152,9 +152,11 @@ $('#kode_barang').focus();
 			data        : "kode_barang="+kode_barang,
 			cache       : false,
 			success     : function(html){
+                alert(html);
 				$("#status").html(html);
 			},
 			error:function(html){
+                alert(html);
 				$("#status").html(html);
 			}
 		});
@@ -200,13 +202,82 @@ $('#kode_barang').focus();
             data: dataString,
             cache: false,
             success:function(html){
-                alert(html);
+                $('#kode_barang').focus();
                 tampil_data();
             },
             error:function(html){
-                alert(html);
+                alert('gagal menambahkan barang ke daftar belanja');
                 tampil_data();
             }
         });
         }
+
+    function myFunction(){
+        
+        if(event.keyCode == 9){
+            event.preventDefault()
+            alert('Tab');
+        }
+
+        if(event.keyCode == 16){
+            event.preventDefault()
+            alert('Shift');
+        }
+
+        if(event.keyCode == 17){
+            event.preventDefault()
+            alert('Ctrl');
+        }
+
+        if(event.keyCode == 18){
+            event.preventDefault()
+            alert('Alt');
+        }
+
+
+        if(event.keyCode == 27){
+            event.preventDefault()
+            alert('Escape');
+        }
+
+        if(event.keyCode == 33){
+            event.preventDefault()
+            alert('Page Up');
+        }
+
+        if(event.keyCode == 34){
+            event.preventDefault()
+            alert('Page Down');
+        }
+
+        if(event.keyCode == 35){
+            event.preventDefault()
+            alert('End');
+        }
+        
+        if(event.keyCode == 36){
+            event.preventDefault()
+            alert('Home');
+        }
+
+        if(event.keyCode == 37){
+            event.preventDefault()
+            alert('Left Arrow');
+        }
+
+        if(event.keyCode == 38){
+            event.preventDefault()
+            alert('Up Arrow');
+        }
+
+        if(event.keyCode == 39){
+            event.preventDefault()
+            alert('Rigt Arrow');
+        }
+
+        if(event.keyCode == 40){
+            event.preventDefault()
+            alert('Down Arrow');
+        }
+    }
 </script>

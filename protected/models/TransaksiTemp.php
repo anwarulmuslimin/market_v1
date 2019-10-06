@@ -114,4 +114,14 @@ class TransaksiTemp extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+	public function getNamaBarang($id){
+		$Barang = Barang::model()->findByAttributes(array('barang_barcode'=>$id));
+		return $Barang->barang_nama;
+	}
+
+	public function getHargaBarang($id){
+		$Barang = Barang::model()->findByAttributes(array('barang_barcode'=>$id));
+		return $Barang->barang_nama;
+	}
 }
