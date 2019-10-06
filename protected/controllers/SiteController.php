@@ -2,7 +2,7 @@
 
 class SiteController extends Controller
 {
-	public $layout='app';
+	public $layout='login';
 
 	/**
 	 * Declares class-based actions.
@@ -88,7 +88,7 @@ class SiteController extends Controller
 				$this->redirect(Yii::app()->user->returnUrl);
 		}
 		// display the login form
-		$this->render('login',array('model'=>$model));
+		//$this->render('login',array('model'=>$model));
 	}
 
 	/**

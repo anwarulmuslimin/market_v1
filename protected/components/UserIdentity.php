@@ -15,18 +15,32 @@ class UserIdentity extends CUserIdentity
 	 */
 	public function authenticate()
 	{
-		$user=User::model()->find('LOWER(username)=?',array(strtolower($this->username)));
-		if($user===null)
-			$this->errorCode=self::ERROR_USERNAME_INVALID;
-		else if(!$user->validatePassword($this->password))
-			$this->errorCode=self::ERROR_PASSWORD_INVALID;
-		else
-		{
-			$this->_id=$user->id;
-			$this->username=$user->username;
-			$this->errorCode=self::ERROR_NONE;
-		}
-		return $this->errorCode==self::ERROR_NONE;
+		// $user=User::model()->find('LOWER(username)=?',array(strtolower($this->username)));
+		// if($user===null)
+		// 	$this->errorCode=self::ERROR_USERNAME_INVALID;
+		// else if(!$user->validatePassword($this->password))
+		// 	$this->errorCode=self::ERROR_PASSWORD_INVALID;
+		// else
+		// {
+		// 	$this->_id=$user->id;
+		// 	$this->username=$user->username;
+		// 	$this->errorCode=self::ERROR_NONE;
+		// }
+		// return $this->errorCode==self::ERROR_NONE;
+
+		$model 	= new User;
+  		$user	= $model->findByAttributes(array('user_user'=>$this->username));
+                if($user===null){
+                    $this->errorCode=self::ERROR_USERNAME_INVALID;
+                }else{
+                    if($user->user_password !== $user->encrypt($this->password)){
+                        $this->errorCode=self::ERROR_PASSWORD_INVALID;
+                    }else{
+                        $this->_id = $user->user_id;
+                        $this->errorCode=self::ERROR_NONE;
+                    }
+                }
+  		return !$this->errorCode;
 	}
 
 	/**

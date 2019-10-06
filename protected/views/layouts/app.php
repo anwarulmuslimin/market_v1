@@ -29,7 +29,7 @@
                     <div id="app-nav-top-bar" class="nav-collapse">
                         <ul class="nav pull-right">
                             <li>
-                                <a href="login.html">Logout</a>
+                                <a href="<?php echo Yii::app()->createUrl('site/logout');?>">Logout</a>
                             </li>
                             
                         </ul>
