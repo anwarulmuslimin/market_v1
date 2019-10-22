@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table 'transaksi_detail':
  * @property integer $detail_transaksi_id
+ * @property string $detail_transaksi_barcode
  * @property integer $detail_transaksi_transaksi_id
  * @property integer $detail_transaksi_harga_satuan
  * @property integer $detail_transaksi_harga_diskon
@@ -31,11 +32,12 @@ class TransaksiDetail extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('detail_transaksi_transaksi_id, detail_transaksi_harga_diskon, detail_transaksi_jumlah, detail_transaksi_create, detail_transaksi_update', 'required'),
+			array('detail_transaksi_barcode, detail_transaksi_transaksi_id, detail_transaksi_harga_diskon, detail_transaksi_jumlah, detail_transaksi_create, detail_transaksi_update', 'required'),
 			array('detail_transaksi_transaksi_id, detail_transaksi_harga_satuan, detail_transaksi_harga_diskon, detail_transaksi_diskon, detail_transaksi_jumlah', 'numerical', 'integerOnly'=>true),
+			array('detail_transaksi_barcode', 'length', 'max'=>100),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('detail_transaksi_id, detail_transaksi_transaksi_id, detail_transaksi_harga_satuan, detail_transaksi_harga_diskon, detail_transaksi_diskon, detail_transaksi_jumlah, detail_transaksi_create, detail_transaksi_update', 'safe', 'on'=>'search'),
+			array('detail_transaksi_id, detail_transaksi_barcode, detail_transaksi_transaksi_id, detail_transaksi_harga_satuan, detail_transaksi_harga_diskon, detail_transaksi_diskon, detail_transaksi_jumlah, detail_transaksi_create, detail_transaksi_update', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -57,6 +59,7 @@ class TransaksiDetail extends CActiveRecord
 	{
 		return array(
 			'detail_transaksi_id' => 'Detail Transaksi',
+			'detail_transaksi_barcode' => 'Detail Transaksi Barcode',
 			'detail_transaksi_transaksi_id' => 'Detail Transaksi Transaksi',
 			'detail_transaksi_harga_satuan' => 'Detail Transaksi Harga Satuan',
 			'detail_transaksi_harga_diskon' => 'Detail Transaksi Harga Diskon',
@@ -86,6 +89,7 @@ class TransaksiDetail extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('detail_transaksi_id',$this->detail_transaksi_id);
+		$criteria->compare('detail_transaksi_barcode',$this->detail_transaksi_barcode,true);
 		$criteria->compare('detail_transaksi_transaksi_id',$this->detail_transaksi_transaksi_id);
 		$criteria->compare('detail_transaksi_harga_satuan',$this->detail_transaksi_harga_satuan);
 		$criteria->compare('detail_transaksi_harga_diskon',$this->detail_transaksi_harga_diskon);

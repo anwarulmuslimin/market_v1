@@ -37,7 +37,7 @@
             <div id="Person-1" class="box">
                 <div class="box-header">
                     <i class="icon-list icon-medium"></i>
-                    <h5>Daftar Minimarket</h5>
+                    <h5>Daftar Minimarket <?php echo 'user id nya :'.$this->getId();?></h5>
                 </div>
                 <div class="box-content box-table" id="list_data">
                 <table class="table table-hover tablesorter">

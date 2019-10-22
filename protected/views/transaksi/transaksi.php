@@ -38,7 +38,7 @@
                         </td>
                         <td>
                         <div class="btn-group">
-                        <button id="simpan" rel="tooltip" title="Simpan Sebagai pembelian" class="btn btn-primary"><i class="icon-shopping-cart"></i> Simpan</button>
+                        <button id="simpan" rel="tooltip" title="Simpan Sebagai pembelian" class="btn btn-success"><i class="icon-shopping-cart"></i> Simpan</button>
                             <a title="Ctrl+Shift+F" role="button" class="btn" data-toggle="modal"><i class="icon-search"></i> Cari</a>
                             </div>
                         </td>
@@ -56,8 +56,11 @@
         <div class="span4">
             <div class="blockoff-left">
             <legend style="text-align:center;font-weight:bold">Total Bayar</legend><br>
-            <h1 style="color:#1f3a4d;" id="jml_belanja"></h1>
+            <h1 style="color:#1f3a4d;" id="jml_belanja" name="jml_belanja"></h1>
         </div>
+            <input type="hidden" id="urut" value="<?php echo $urut_hold;?>">
+            <input type="hidden" id="total_dibayar" name="total_dibayar">
+            <input type="hidden" id="petugas" value="<?php echo $petugas;?>">
             <a class=" btn btn-success btn-large" onclick="bayar();"><i class="icon icon-money"></i> Bayar</a><br/>&nbsp;
             <a class=" btn btn-danger btn-large" onclick="hold();"><i class="icon icon-arrow-left"></i> Tunda</a>
         </div>
@@ -127,8 +130,8 @@ $('#kode_barang').focus();
             data        : "search="+search,
             cache       : false,
             success     :function(html){
-               $("#list_data").html(html);
                 total_belanja();
+               $("#list_data").html(html);
             }
         });
     }
@@ -139,7 +142,21 @@ $('#kode_barang').focus();
             url         : "<?php echo Yii::app()->createUrl('transaksi/total_belanja');?>",
             cache       : false,
             success     : function(html){
+                total_dibayar();
                 $("#jml_belanja").html(html);
+            }
+        });
+    }
+
+    function total_dibayar(){
+        
+        $.ajax({
+            type        : "POST",
+            url         : "<?php echo Yii::app()->createUrl('transaksi/total_dibayar');?>",
+            cache       : false,
+            success     : function(html){
+               
+                $("#total_dibayar").val(html);
             }
         });
     }
@@ -152,7 +169,7 @@ $('#kode_barang').focus();
 			data        : "kode_barang="+kode_barang,
 			cache       : false,
 			success     : function(html){
-                alert(html);
+               // alert(html);
 				$("#status").html(html);
 			},
 			error:function(html){
@@ -195,7 +212,6 @@ $('#kode_barang').focus();
     function simpanbarang(kode_barang,jml){
 
         var dataString 	= "kode_barang="+kode_barang+"&jml="+jml;
-     //  alert(dataString);
         $.ajax({
             type: "POST",
             url: "<?php echo Yii::app()->createUrl('transaksi/simpanpembeliantemp');?>",
@@ -204,20 +220,44 @@ $('#kode_barang').focus();
             success:function(html){
                 $('#kode_barang').focus();
                 tampil_data();
+                total_belanja();
             },
             error:function(html){
                 alert('gagal menambahkan barang ke daftar belanja');
                 tampil_data();
+                total_belanja();
             }
         });
-        }
+    }
+
+    function bayar()
+    {
+        var urut        = $("#urut").val();
+        var petugas     = $("#petugas").val();
+        var total       = $("#total_dibayar").val();
+        var dataString  = "urut_hold="+urut+"&petugas="+petugas+"&total="+total;
+        alert(dataString);
+        $.ajax({
+            type: "POST",
+            url: "<?php echo Yii::app()->createUrl('transaksi/bayartunai');?>",
+            data: dataString,
+            cache: false,
+            success:function(html){
+                alert(html);
+                $('#kode_barang').focus();
+            },
+            error:function(html){
+                alert('gagal memproses transaksi pembayaran');
+            }
+        });
+    }
 
     function myFunction(){
         
-        if(event.keyCode == 9){
+        /*if(event.keyCode == 9){
             event.preventDefault()
             alert('Tab');
-        }
+        } */
 
         if(event.keyCode == 16){
             event.preventDefault()

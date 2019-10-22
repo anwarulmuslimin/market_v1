@@ -2,7 +2,7 @@
 
 class SiteController extends Controller
 {
-	public $layout='login';
+	public $layout='app';
 
 	/**
 	 * Declares class-based actions.
@@ -24,7 +24,7 @@ class SiteController extends Controller
 	}
 
 	public function actionIndex()
-	{
+	{		
 		$this->render('home');
 	}
 
@@ -67,6 +67,7 @@ class SiteController extends Controller
 	 */
 	public function actionLogin()
 	{
+		$this->layout="login";
 		if (!defined('CRYPT_BLOWFISH')||!CRYPT_BLOWFISH)
 			throw new CHttpException(500,"This application requires that PHP was compiled with Blowfish support for crypt().");
 
@@ -74,7 +75,7 @@ class SiteController extends Controller
 
 		// if it is ajax validation request
 		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
+		{	
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
@@ -84,11 +85,12 @@ class SiteController extends Controller
 		{
 			$model->attributes=$_POST['LoginForm'];
 			// validate user input and redirect to the previous page if valid
+			//echo $model->username.'&'. $model->password;
 			if($model->validate() && $model->login())
 				$this->redirect(Yii::app()->user->returnUrl);
 		}
 		// display the login form
-		//$this->render('login',array('model'=>$model));
+		$this->render('login',array('model'=>$model));
 	}
 
 	/**
@@ -97,6 +99,7 @@ class SiteController extends Controller
 	public function actionLogout()
 	{
 		Yii::app()->user->logout();
-		$this->redirect(Yii::app()->homeUrl);
+		echo 'nama : '.Yii::app()->homeUrl;
+		//$this->redirect(Yii::app()->homeUrl);
 	}
 }

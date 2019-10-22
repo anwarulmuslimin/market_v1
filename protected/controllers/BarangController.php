@@ -19,6 +19,12 @@ class BarangController extends Controller
 		);
 	}
 
+	// public function beforeAction($action)
+	// {
+	// 	$this->CekLogin();
+	//    	return true; 
+	// }
+
 	/**
 	 * Specifies the access control rules.
 	 * This method is used by the 'accessControl' filter.

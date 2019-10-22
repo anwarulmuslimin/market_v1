@@ -1,46 +1,36 @@
-<?php
-$this->pageTitle=Yii::app()->name . ' - Login';
-$this->breadcrumbs=array(
-	'Login',
-);
-?>
 
-<h1>Login</h1>
+<div class="signin-row row">
+                    <div class="span5"></div>
+                    <div class="span6">
+                        <div class="container-signin">
+                            <legend  style="text-align:center">LOGIN SISTEM</legend>
+                            <?php $form=$this->beginWidget('CActiveForm', array(
+                                'id'=>'login-form',
+                                'action'=>Yii::app()->createUrl('site/login'),
+                                'enableAjaxValidation'=>true,
+                            )); ?>
+                                <div class="form-inner">
+                                    <div class="input-prepend">
+									<?php echo $form->labelEx($model,'username'); ?>
+									<?php echo $form->textField($model,'username'); ?>
+									<?php echo $form->error($model,'username'); ?>
+                                    </div>
 
-<p>Please fill out the following form with your login credentials:</p>
-
-<div class="form">
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'login-form',
-	'enableAjaxValidation'=>true,
-)); ?>
-
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'username'); ?>
-		<?php echo $form->textField($model,'username'); ?>
-		<?php echo $form->error($model,'username'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'password'); ?>
-		<?php echo $form->passwordField($model,'password'); ?>
-		<?php echo $form->error($model,'password'); ?>
-		<p class="hint">
-			Hint: You may login with <tt>demo/demo</tt>.
-		</p>
-	</div>
-
-	<div class="row rememberMe">
-		<?php echo $form->checkBox($model,'rememberMe'); ?>
-		<?php echo $form->label($model,'rememberMe'); ?>
-		<?php echo $form->error($model,'rememberMe'); ?>
-	</div>
-
-	<div class="row submit">
-		<?php echo CHtml::submitButton('Login'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
-</div><!-- form -->
+                                    <div class="input-prepend">
+										<?php echo $form->labelEx($model,'password'); ?>
+										<?php echo $form->passwordField($model,'password'); ?>
+										<?php echo $form->error($model,'password'); ?>
+                                    </div>
+                                    <!-- <label class="checkbox" for='remember_me'>Remember me
+                                        <input type='checkbox' id='remember_me'/>
+                                    </label> -->
+                                </div>
+                                <footer class="signin-actions">
+								<?php echo CHtml::submitButton('Login'); ?>
+                                </footer>
+                                <?php $this->endWidget(); ?>
+                        </div>
+                    </div>
+                    <div class="span4"></div>
+				</div>
+			

@@ -123,7 +123,11 @@ class TransaksiController extends Controller
 	public function actionIndex()
 	{
 	//	$dataProvider=new CActiveDataProvider('Transaksi');
+		$petugas = 1;
+		$urut_hold = 1; 
 		$this->render('transaksi',array(
+			'petugas' => $petugas,
+			'urut_hold' => $urut_hold,
 			//'dataProvider'=>$dataProvider,
 		));
 	}
@@ -182,7 +186,30 @@ class TransaksiController extends Controller
 
 	public function actionTotal_belanja()
 	{
-		echo "Rp. 89.600,00";
+		$petugas 		= 1;
+		
+		$resource_sum 	= Yii::app()->db->createCommand()
+						->select('sum(transaksi_temp_harga_total) as total')
+						->from('transaksi_temp')
+						->where('transaksi_temp_user_id = '.$petugas)
+						->queryRow();
+	  
+		echo $this->Rupiah($resource_sum['total']);
+
+	}
+
+	public function actionTotal_dibayar()
+	{
+		$petugas 		= 1;
+		
+		$resource_sum 	= Yii::app()->db->createCommand()
+						->select('sum(transaksi_temp_harga_total) as total')
+						->from('transaksi_temp')
+						->where('transaksi_temp_user_id = '.$petugas)
+						->queryRow();
+	  
+		echo $resource_sum['total'];
+
 	}
 
 	public function actionCaribarang()
@@ -211,29 +238,85 @@ class TransaksiController extends Controller
 
 	public function actionSimpanpembeliantemp()
 	{
-		$petugas 					= 1;
+		$petugas 		= 1;
 		
-		$kode_barang 				= $_POST['kode_barang'];
-		$jml 						= $_POST['jml'];
-		$cek_data 					= TransaksiTemp::model()->findByAttributes(array('transasi_temp_barcode'=>$kode_barang,'transaksi_temp_user_id'=>$petugas));
+		$kode_barang 	= $_POST['kode_barang'];
+		$jml 			= $_POST['jml'];
+		$cek_data 		= TransaksiTemp::model()->findByAttributes(array('transasi_temp_barcode'=>$kode_barang,'transaksi_temp_user_id'=>$petugas));
+		$dataBarang 	= Barang::model()->findByAttributes(array('barang_barcode'=>$kode_barang));
+		$harga 			= $dataBarang->getHargaJual($dataBarang->barang_id);
+		$cek_stok 		= BarangHarga::model()->findByAttributes(array('harga_barang_id'=> $dataBarang->barang_id));
+		$stok_akhir 	= $cek_stok->harga_barang_stok - $jml;
+		$id_barang 		= $dataBarang->barang_id;
+		$cr 			= new CDbCriteria;
+		$cr->condition 	= 'harga_barang_id='.$id_barang;
+		$HrgaBarang 	= BarangHarga::model()->find($cr);
 		
 		if(isset($cek_data)){
-			$jumlah_akhir 			= $cek_data->transaksi_temp_jumlah + $jml;
-			TransaksiTemp::model()->updateAll(array( 'transaksi_temp_jumlah' => $jumlah_akhir ), 'transasi_temp_barcode = "'.$kode_barang.'" AND transaksi_temp_user_id = "'.$petugas.'"' );
+			$harga_total	= $harga*$jml;
+			$jumlah_akhir 	= $cek_data->transaksi_temp_jumlah + $jml;
+			$rupiah_akhir 	= $cek_data->transaksi_temp_harga_total + $harga_total;
+			if($cek_stok->harga_barang_stok >= $jumlah_akhir){
+
+				TransaksiTemp::model()->updateAll(array( 'transaksi_temp_jumlah' => $jumlah_akhir,'transaksi_temp_harga_total' =>$rupiah_akhir ), 'transasi_temp_barcode = "'.$kode_barang.'" AND transaksi_temp_user_id = "'.$petugas.'"' );
+				
+				$HrgaBarang->harga_barang_stok 	= $stok_akhir ;
+				$HrgaBarang->save();
+			}
 		}else{
-			$new_temp 							= new TransaksiTemp;
-			$new_temp->transaksi_temp_urut 	= 1;
-			$new_temp->transaksi_temp_user_id 	= $petugas;
-			$new_temp->transasi_temp_barcode 		= $kode_barang;
-			$new_temp->transaksi_temp_jumlah 		= $jml;
-			$new_temp->transaksi_temp_urut 		= 1;
-			$new_temp->transaksi_temp_harga_satuan= 3000;
-			$new_temp->transaksi_temp_harga_diskon= 3000;
-			$new_temp->transaksi_temp_diskon		= 0;
-			$new_temp->transaksi_temp_create		= date('Y-m-d H:i:s');
-			$new_temp->transaksi_temp_update		= date('Y-m-d H:i:s');
-			$new_temp->save();
+			if($cek_stok->harga_barang_stok >= $jml){
+				$new_temp 								= new TransaksiTemp;
+				$new_temp->transaksi_temp_urut 			= 1;
+				$new_temp->transaksi_temp_user_id 		= $petugas;
+				$new_temp->transasi_temp_barcode 		= $kode_barang;
+				$new_temp->transaksi_temp_jumlah 		= $jml;
+				$new_temp->transaksi_temp_urut 			= 1;
+				$new_temp->transaksi_temp_harga_satuan	= $harga;
+				$new_temp->transaksi_temp_harga_diskon  = 0;
+				$new_temp->transaksi_temp_diskon		= 0;
+				$new_temp->transaksi_temp_harga_total   = $harga*$jml;
+				$new_temp->transaksi_temp_create		= date('Y-m-d H:i:s');
+				$new_temp->transaksi_temp_update		= date('Y-m-d H:i:s');
+				if($new_temp->save()){
+					$HrgaBarang->harga_barang_stok 	= $stok_akhir ;
+					$HrgaBarang->save();
+				}
+			}
 		}				
 		
+	}
+
+	public function actionBayartunai()
+	{
+		$urut 		= $_POST['urut_hold'];
+		$petugas	= $_POST['petugas'];
+		$total		= $_POST['total'];
+		$cr_trx 			= new CDbCriteria;
+		$cr_trx->condition 	= "transaksi_temp_urut='$urut' and transaksi_temp_user_id='$petugas'";
+		$TempTransaksi 		= TransaksiTemp::model()->findAll($cr_trx);
+		
+		$simpan 						= new Transaksi;
+		$simpan->transaksi_harga 		= $total;
+		$simpan->transaksi_diskon 		= 0;
+		$simpan->transaksi_harga_diskon = 0;
+		$simpan->transaksi_user_id 		= $petugas;
+		$simpan->transaksi_create 		= date('Y-m-d H:i:s');
+		$simpan->transaksi_update 		= date('Y-m-d H:i:s');
+		if($simpan->save()){
+			$id_transaksi = $simpan->transaksi_id;
+		}
+	
+		foreach($TempTransaksi as $data){
+			$simpan_detail 									=  new TransaksiDetail;
+			$simpan_detail->detail_transaksi_barcode		= $data->transasi_temp_barcode;
+			$simpan_detail->detail_transaksi_transaksi_id	= $id_transaksi;
+			$simpan_detail->detail_transaksi_harga_satuan	= $data->transaksi_temp_harga_satuan;
+			$simpan_detail->detail_transaksi_harga_diskon	= $data->transaksi_temp_harga_diskon;
+			$simpan_detail->detail_transaksi_diskon			= $data->transaksi_temp_diskon;
+			$simpan_detail->detail_transaksi_jumlah			= $data->transaksi_temp_jumlah;
+			$simpan_detail->detail_transaksi_create			= date('Y-m-d H:i:s');
+			$simpan_detail->detail_transaksi_update			= date('Y-m-d H:i:s');
+			$simpan_detail->save();
+		}
 	}
 }

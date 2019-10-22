@@ -127,4 +127,20 @@ class User extends CActiveRecord
 		return parent::model($className);
 	}
 
+	public function validatePassword($password)
+	{
+		return crypt($password,$this->password)===$this->password;
+	}
+
+	/**
+	 * Generates the password hash.
+	 * @param string password
+	 * @return string hash
+	 */
+	public function hashPassword($password)
+	{
+		return crypt($password, $this->generateSalt());
+	}
+
+
 }

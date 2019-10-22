@@ -27,17 +27,22 @@ class UserIdentity extends CUserIdentity
 		// 	$this->errorCode=self::ERROR_NONE;
 		// }
 		// return $this->errorCode==self::ERROR_NONE;
-
+		
 		$model 	= new User;
   		$user	= $model->findByAttributes(array('user_user'=>$this->username));
                 if($user===null){
                     $this->errorCode=self::ERROR_USERNAME_INVALID;
                 }else{
                     if($user->user_password !== $user->encrypt($this->password)){
+						
                         $this->errorCode=self::ERROR_PASSWORD_INVALID;
                     }else{
-                        $this->_id = $user->user_id;
-                        $this->errorCode=self::ERROR_NONE;
+						Yii::app()->session;
+    					Yii::app()->session['userid'] = $user->user_id;
+						$this->_id=$user->user_id;
+						$this->username=$user->user_nama;
+						$this->errorCode=self::ERROR_NONE;
+				
                     }
                 }
   		return !$this->errorCode;
